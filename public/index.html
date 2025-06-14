@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pure</title>
+  <style>
+    /* Reset & base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f0f23 100%);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      color: #fff; overflow-x: hidden; position: relative;
+    }
+    body::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 20% 80%, rgba(120,119,198,0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,119,198,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120,219,255,0.1) 0%, transparent 50%);
+      pointer-events: none; animation: float 8s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100%{transform: translateY(0) rotate(0deg);}
+      50%{transform: translateY(-20px) rotate(1deg);}
+    }
+
+    .container {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+      position: relative; z-index: 10;
+      animation: slideIn 0.6s ease-out;
+    }
+    @keyframes slideIn {
+      from {opacity: 0; transform: translateY(30px);}
+      to   {opacity: 1; transform: translateY(0);}
+    }
+
+    .header { text-align: center; margin-bottom: 2rem; }
+    .header h1 {
+      font-size: 2rem; font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .header p { color: rgba(255,255,255,0.7); font-size: 0.95rem; }
+
+    .form-group { margin-bottom: 1.5rem; }
+    label {
+      display: block; color: rgba(255,255,255,0.9);
+      font-weight: 600; margin-bottom: 0.5rem; font-size: 0.95rem;
+    }
+    input, textarea {
+      width: 100%; padding: 1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; color: #fff; font-size: 1rem;
+      transition: all 0.3s ease; backdrop-filter: blur(10px);
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: rgba(102,126,234,0.5);
+      background: rgba(255,255,255,0.08);
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+      transform: translateY(-1px);
+    }
+    ::placeholder { color: rgba(255,255,255,0.4); }
+    textarea { resize: vertical; min-height: 120px; }
+
+    .btn {
+      width: 100%; padding: 1rem 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none; border-radius: 12px;
+      color: #fff; font-size: 1.1rem; font-weight: 600;
+      cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;
+    }
+    .btn::before {
+      content: ''; position: absolute;
+      top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    .btn:hover::before { left: 100%; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102,126,234,0.3); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .status {
+      margin-top: 1.5rem; padding: 1rem; border-radius: 12px;
+      font-weight: 500; text-align: center; min-height: 50px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s ease;
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+    }
+    .status.success { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: #4ade80; }
+    .status.error   { background: rgba(239,68,68,0.1);  border-color: rgba(239,68,68,0.3);  color: #f87171; }
+    .status.warning { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: #fbbf24; }
+    .status.loading { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #60a5fa; }
+
+    .loading-spinner {
+      width: 20px; height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top: 2px solid #60a5fa;
+      border-radius: 50%; animation: spin 1s linear infinite;
+      margin-right: 0.5rem;
+    }
+    @keyframes spin { 0%{transform:rotate(0)}100%{transform:rotate(360deg)} }
+
+    .hotkey-hint { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.5rem; }
+
+    .image-option-tabs {
+      display: flex; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 4px; margin-bottom: 1rem;
+    }
+    .tab-btn {
+      flex: 1; padding: 0.75rem 1rem; background: transparent;
+      border: none; color: rgba(255,255,255,0.6);
+      border-radius: 8px; cursor: pointer;
+      transition: all 0.3s ease; font-size: 0.9rem; font-weight: 500;
+    }
+    .tab-btn.active { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color: #fff; }
+    .tab-btn:hover:not(.active) { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.05); }
+
+    .tab-content { margin-top: 1rem; display: none; }
+    .file-upload-area {
+      border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; padding: 2rem;
+      text-align: center; cursor: pointer; transition: all 0.3s ease;
+      background: rgba(255,255,255,0.02);
+    }
+    .file-upload-area:hover { border-color: rgba(102,126,234,0.5); background: rgba(255,255,255,0.05); }
+    .file-upload-area.dragover { border-color: #667eea; background: rgba(102,126,234,0.1); }
+
+    .file-preview {
+      display: flex; align-items: center; gap: 1rem;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 1rem; margin-top: 1rem;
+    }
+    .file-preview img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
+    .file-info { flex: 1; display: flex; justify-content: space-between; align-items: center; }
+    .file-info span { color: rgba(255,255,255,0.9); font-size: 0.9rem; }
+    .remove-btn {
+      background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.3);
+      color: #f87171; border-radius: 50%; width: 30px; height: 30px;
+      cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s ease;
+    }
+    .remove-btn:hover { background: rgba(239,68,68,0.3); }
+
+    @media (max-width:768px) {
+      .container { margin:1rem; padding:2rem; }
+      .header h1 { font-size:1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Pure Bot UI</h1>
+      <p>Send text or images to your Discord channel</p>
+    </div>
+
+    <div class="form-group">
+      <label for="channelId">Channel ID</label>
+      <input type="text" id="channelId" placeholder="Enter Discord Channel ID" required autofocus />
+    </div>
+
+    <div class="form-group">
+      <label for="content">Message Content</label>
+      <textarea id="content" placeholder="Type your message here..."></textarea>
+      <div class="hotkey-hint">Press Ctrl+Enter to send • Shift+Enter for new line</div>
+    </div>
+
+    <div class="form-group">
+      <label>Image Option</label>
+      <div class="image-option-tabs">
+        <button class="tab-btn active" data-tab="none">Text Only</button>
+        <button class="tab-btn" data-tab="url">Image URL</button>
+        <button class="tab-btn" data-tab="upload">Upload File</button>
+      </div>
+
+      <div id="noneTab" class="tab-content" style="display: block;"></div>
+
+      <div id="urlTab" class="tab-content">
+        <input type="url" id="imageUrl" placeholder="https://example.com/image.png" />
+        <div class="hotkey-hint">Enter a direct link to an image file</div>
+      </div>
+
+      <div id="uploadTab" class="tab-content">
+        <div class="file-upload-area" id="fileUploadArea">
+          <input type="file" id="fileInput" accept="image/*" style="display: none;" />
+          <div>
+            <div class="upload-icon">📁</div>
+            <p>Click to select an image or drag & drop</p>
+            <small>PNG, JPG, GIF, WebP (max 8MB)</small>
+          </div>
+        </div>
+        <div id="filePreview" class="file-preview" style="display: none;">
+          <img id="previewImage" alt="Preview" />
+          <div class="file-info">
+            <span id="fileName"></span>
+            <button id="removeFile" class="remove-btn">&times;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button id="sendBtn" class="btn">
+      <span id="btnText">Send Message</span>
+    </button>
+
+    <div id="status" class="status"></div>
+  </div>
+
+  <script>
+    const channelInput = document.getElementById('channelId');
+    const contentInput = document.getElementById('content');
+    const imageUrlInput = document.getElementById('imageUrl');
+    const fileInput = document.getElementById('fileInput');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const filePreview = document.getElementById('filePreview');
+    const previewImage = document.getElementById('previewImage');
+    const fileNameLabel = document.getElementById('fileName');
+    const removeFileBtn = document.getElementById('removeFile');
+    const sendBtn = document.getElementById('sendBtn');
+    const btnText = document.getElementById('btnText');
+    const statusDiv = document.getElementById('status');
+    let selectedFile = null;
+    let currentTab = 'none';
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTab = btn.dataset.tab;
+        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+        document.getElementById(currentTab + 'Tab').style.display = 'block';
+        selectedFile = null; imageUrlInput.value = ''; filePreview.style.display = 'none';
+      });
+    });
+
+    // File upload handlers
+    fileUploadArea.addEventListener('click', () => fileInput.click());
+    fileUploadArea.addEventListener('dragover', e => { e.preventDefault(); fileUploadArea.classList.add('dragover'); });
+    fileUploadArea.addEventListener('dragleave', () => fileUploadArea.classList.remove('dragover'));
+    fileUploadArea.addEventListener('drop', e => {
+      e.preventDefault(); fileUploadArea.classList.remove('dragover');
+      if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+    removeFileBtn.addEventListener('click', () => {
+      selectedFile = null; fileInput.value = ''; filePreview.style.display = 'none';
+    });
+
+    function handleFile(file) {
+      if (file.size > 8 * 1024 * 1024) return showStatus('❌ File must be under 8MB','error');
+      const allowed = ['image/jpeg','image/png','image/gif','image/webp'];
+      if (!allowed.includes(file.type)) return showStatus('❌ Only images allowed','error');
+      selectedFile = file; fileNameLabel.textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = e => { previewImage.src = e.target.result; filePreview.style.display = 'flex'; };
+      reader.readAsDataURL(file);
+    }
+
+    async function sendMessage() {
+      const channelId = channelInput.value.trim();
+      const content = contentInput.value.trim();
+      const imageUrl = imageUrlInput.value.trim();
+      if (!channelId) return showStatus('⚠️ Enter a Channel ID.','warning');
+      if (!content && currentTab === 'none' && !selectedFile && !imageUrl)
+        return showStatus('⚠️ Enter text, URL, or file.','warning');
+
+      sendBtn.disabled = true; btnText.innerHTML = '<div class="loading-spinner"></div>Sending...';
+      showStatus('<div class="loading-spinner"></div>Sending message...','loading');
+
+      try {
+        let res;
+        if (currentTab === 'upload' && selectedFile) {
+          const form = new FormData();
+          form.append('channelId', channelId);
+          form.append('content', content);
+          form.append('image', selectedFile);
+          res = await fetch('/api/send-with-file', { method:'POST', body: form });
+        } else {
+          res = await fetch('/api/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              channelId,
+              content: content || undefined,
+              imageUrl: currentTab==='url'? imageUrl : undefined
+            })
+          });
+        }
+        if (res.ok) {
+          showStatus('✅ Message sent successfully!','success');
+          contentInput.value = ''; imageUrlInput.value=''; selectedFile=null;
+          fileInput.value=''; filePreview.style.display='none';
+        } else {
+          const text = await res.text();
+          showStatus('❌ Error: '+text,'error');
+        }
+      } catch {
+        showStatus('❌ Network error','error');
+      } finally {
+        sendBtn.disabled=false; btnText.textContent='Send Message';
+        setTimeout(() => clearStatus(), 5000);
+      }
+    }
+
+    function showStatus(msg, type='') {
+      statusDiv.innerHTML = msg;
+      statusDiv.className = 'status ' + type;
+    }
+    function clearStatus() {
+      statusDiv.textContent=''; statusDiv.className='status';
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    contentInput.addEventListener('keydown', e => {
+      if (e.key==='Enter' && e.ctrlKey) { e.preventDefault(); sendMessage(); }
+    });
+  </script>
+</body>
+</html>
