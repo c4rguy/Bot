@@ -8,7 +8,8 @@ export default async function handler(req, res) {
   if (!content && !imageUrl) return res.status(400).send('Content or imageUrl required.');
 
   try {
-    const channel = await client.channels.fetch(channelId);
+    // Force fetch the channel to bypass cache issues
+    const channel = await client.channels.fetch(channelId, { force: true });
     if (!channel) return res.status(404).send('Channel not found.');
 
     if (!channel.permissionsFor(client.user).has(PermissionsBitField.Flags.SendMessages)) {
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
     await channel.send(opts);
     return res.status(200).send('Message sent!');
   } catch (err) {
-    console.error(err);
+    console.error('Send message error:', err);
     return res.status(500).send('Failed to send message.');
   }
 }
