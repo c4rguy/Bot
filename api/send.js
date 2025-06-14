@@ -1,5 +1,4 @@
-// api/send.js
-const { client, PermissionsBitField } = require('../utils/discordClient');
+import { client, PermissionsBitField } from '../utils/discordClient.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');

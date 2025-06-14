@@ -1,8 +1,7 @@
-// api/send-with-file.js
 import nextConnect from 'next-connect';
 import multer from 'multer';
 import fs from 'fs';
-const { client, PermissionsBitField } = require('../utils/discordClient');
+import { client, PermissionsBitField } from '../utils/discordClient.js';
 
 // Save uploads to /tmp
 const upload = multer({ storage: multer.diskStorage({
